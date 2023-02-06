@@ -1,0 +1,27 @@
+{
+    "welcome":"привет",
+    "fruit":
+    {
+        "apple": "Яблоко",
+        "banana": "Банан",
+        "pear": "Груша"
+    },
+    "subject":
+    {
+        "math":
+        {
+            "name": "Математика",
+            "description": "Описание математики"
+        },
+        "literature":
+        {
+            "name": "Литература",
+            "description": "Описание Литературы"
+        },
+        "music":
+        {
+            "name": "Музыка",
+            "description": "Описание Музыки"
+        }
+    }
+}

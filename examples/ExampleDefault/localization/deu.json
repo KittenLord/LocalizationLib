@@ -1,0 +1,27 @@
+{
+    "welcome":"hallo",
+    "fruit":
+    {
+        "apple": "der Apfel",
+        "banana": "die Banane",
+        "pear": "die Birne"
+    },
+    "subject":
+    {
+        "math":
+        {
+            "name": "die Mathe",
+            "description": "ein blahblahen"
+        },
+        "literature":
+        {
+            "name": "die Literatur",
+            "description": "eine blahblahblaherin"
+        },
+        "music":
+        {
+            "name": "die Music",
+            "description": "einen mpdoawaniowinadapd"
+        }
+    }
+}
