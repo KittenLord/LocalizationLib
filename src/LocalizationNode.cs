@@ -120,6 +120,30 @@ namespace LocalizationLib
             return GetString(path);
         }
 
+        public bool IsEquivalentTo(LocalizationNode b)
+        {
+            return IsOtherCompleteWIthThis(b) && b.IsOtherCompleteWIthThis(this);
+        }
+
+        private bool IsOtherCompleteWIthThis(LocalizationNode b)
+        {
+            if(this.IsString || b.IsString) throw new Exception();
+
+            if(this.Nodes is not null && b.Nodes is not null)
+            {
+                foreach(var node in this.Nodes)
+                {
+                    if(!b.Nodes.ContainsKey(node.Key)) return false;
+                    if(b.Nodes[node.Key].IsString != node.Value.IsString) return false;
+
+                    var nextNode = b.Nodes[node.Key];
+                    if(node.Value.IsCategory) return node.Value.IsOtherCompleteWIthThis(nextNode);
+                }
+            }
+
+            return true;
+        }
+
         public void AddMissingNodes(LocalizationNode source, bool useSourceValues = true, string defaultValue = "")
         {
             if(this.IsString || source.IsString) throw new Exception();

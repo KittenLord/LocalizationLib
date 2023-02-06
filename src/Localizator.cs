@@ -18,7 +18,6 @@ namespace LocalizationLib
             Node = node;
         }
     }
-
     public struct StringInfo
     {
         public string Name { get; set; }
@@ -43,19 +42,19 @@ namespace LocalizationLib
 
         
         public LocalizatorSettings Settings { get; set; }
-        private CachedNode? CachedNode;
+        private Dictionary<string, LocalizationNode> CachedNodes = new Dictionary<string, LocalizationNode>();
         
         
 
 
 
 
-        public string GetString(string path) => GetString(path, CurrentLocalization, true);
-        public string GetString(string path, string localization) => GetString(path, localization, false);
-        private string GetString(string path, string localization, bool cacheNode = false)
+        public string GetString(string path) => GetStringInternal(path, CurrentLocalization);
+        public string GetString(string path, string localization) => GetStringInternal(path, localization);
+        private string GetStringInternal(string path, string localization)
         {
             path = GetPath(path, localization);
-            var node = GetNode(path, localization, cacheNode);
+            var node = GetNode(path, localization);
             return node.GetString();
         }
 
@@ -63,12 +62,12 @@ namespace LocalizationLib
         
 
 
-        public string GetStringInit(string path, string initValue) => GetStringInit(path, CurrentLocalization, initValue, true);
-        public string GetStringInit(string path, string localization, string initValue) => GetStringInit(path, localization, initValue, false);
-        private string GetStringInit(string path, string localization, string initValue, bool cacheNode = false)
+        public string GetStringInit(string path, string initValue) => GetStringInitInternal(path, CurrentLocalization, initValue);
+        public string GetStringInit(string path, string localization, string initValue) => GetStringInitInternal(path, localization, initValue);
+        private string GetStringInitInternal(string path, string localization, string initValue)
         {
             path = GetPath(path, localization);
-            var node = GetNode("", localization, cacheNode);
+            var node = GetNode("", localization);
             var str = node.GetStringInit(new LocalizationPath(path), initValue, out bool createdNew);
 
             return SaveAfterModifying(str, createdNew, localization, node);
@@ -78,12 +77,12 @@ namespace LocalizationLib
 
 
 
-        public AdditionResult AddString(string path, string stringName, string stringContent) => AddString(path, CurrentLocalization, stringName, stringContent, true);
-        public AdditionResult AddString(string path, string localization, string stringName, string stringContent) => AddString(path, localization, stringName, stringContent, false);
-        private AdditionResult AddString(string path, string localization, string stringName, string stringContent, bool cacheNode = false)
+        public AdditionResult AddString(string path, string stringName, string stringContent) => AddStringInternal(path, CurrentLocalization, stringName, stringContent);
+        public AdditionResult AddString(string path, string localization, string stringName, string stringContent) => AddStringInternal(path, localization, stringName, stringContent);
+        private AdditionResult AddStringInternal(string path, string localization, string stringName, string stringContent)
         {
             path = GetPath(path, localization);
-            var node = GetNode("", localization, cacheNode);
+            var node = GetNode("", localization);
 
             var response = node.AddString(new LocalizationPath(path), stringName, stringContent);
             var createdNew = response.HasFlag(AdditionResult.SucceededAdding);
@@ -95,12 +94,12 @@ namespace LocalizationLib
 
 
 
-        public bool AddStrings(string path, params StringInfo[] strings) => AddStrings(path, CurrentLocalization, true, strings);
-        public bool AddStrings(string path, string localization, params StringInfo[] strings) => AddStrings(path, localization, false, strings);
-        private bool AddStrings(string path, string localization, bool cacheNode, params StringInfo[] strings)
+        public bool AddStrings(string path, params StringInfo[] strings) => AddStringsInternal(path, CurrentLocalization, strings);
+        public bool AddStrings(string path, string localization, params StringInfo[] strings) => AddStringsInternal(path, localization, strings);
+        private bool AddStringsInternal(string path, string localization, params StringInfo[] strings)
         {
             path = GetPath(path, localization);
-            var node = GetNode("", localization, cacheNode);
+            var node = GetNode("", localization);
 
             bool success = true;
             bool createdNew = false;
@@ -119,12 +118,12 @@ namespace LocalizationLib
 
 
 
-        public AdditionResult AddCategory(string path, string categoryName) => AddCategory(path, CurrentLocalization, categoryName, true);
-        public AdditionResult AddCategory(string path, string localization, string categoryName) => AddCategory(path, localization, categoryName, false);
-        private AdditionResult AddCategory(string path, string localization, string categoryName, bool cacheNode)
+        public AdditionResult AddCategory(string path, string categoryName) => AddCategoryInternal(path, CurrentLocalization, categoryName);
+        public AdditionResult AddCategory(string path, string localization, string categoryName) => AddCategoryInternal(path, localization, categoryName);
+        private AdditionResult AddCategoryInternal(string path, string localization, string categoryName)
         {
             path = GetPath(path, localization);
-            var node = GetNode("", localization, cacheNode);
+            var node = GetNode("", localization);
 
             var response = node.AddCategory(new LocalizationPath(path), categoryName);
             var createdNew = response.HasFlag(AdditionResult.SucceededAdding);
@@ -136,12 +135,12 @@ namespace LocalizationLib
 
 
 
-        public bool AddCategories(string path, List<string> categoryNames) => AddCategories(path, CurrentLocalization, true, categoryNames);
-        public bool AddCategories(string path, string localization, List<string> categoryNames) => AddCategories(path, localization, false, categoryNames);
-        private bool AddCategories(string path, string localization, bool cacheNode, List<string> categoryNames)
+        public bool AddCategories(string path, List<string> categoryNames) => AddCategoriesInternal(path, CurrentLocalization, categoryNames);
+        public bool AddCategories(string path, string localization, List<string> categoryNames) => AddCategoriesInternal(path, localization, categoryNames);
+        private bool AddCategoriesInternal(string path, string localization, List<string> categoryNames)
         {
             path = GetPath(path, localization);
-            var node = GetNode("", localization, cacheNode);
+            var node = GetNode("", localization);
 
             bool success = true;
             bool createdNew = false;
@@ -164,8 +163,8 @@ namespace LocalizationLib
         {
             if(!Settings.CanWrite) throw new Exception();
 
-            LocalizationNode node1 = GetNode("", loc1, true);
-            LocalizationNode node2 = GetNode("", loc2, true);
+            LocalizationNode node1 = GetNode("", loc1);
+            LocalizationNode node2 = GetNode("", loc2);
 
             var mergeNode1 = node1.GetNode(new LocalizationPath(Settings.UseSingleFile ? loc1 : ""));
             var mergeNode2 = node2.GetNode(new LocalizationPath(Settings.UseSingleFile ? loc2 : ""));
@@ -174,6 +173,27 @@ namespace LocalizationLib
 
             Settings.Writer.Write(loc1, Localization.SerializeNode(node1));
             Settings.Writer.Write(loc2, Localization.SerializeNode(node2));
+        }
+
+        public bool AreLocalizationsEquivalent(string loc1, string loc2)
+        {
+            LocalizationNode a = GetNode("", loc1);
+            LocalizationNode b = GetNode("", loc2);
+
+            a = a.GetNode(new LocalizationPath(Settings.UseSingleFile ? loc1 : ""));
+            b = b.GetNode(new LocalizationPath(Settings.UseSingleFile ? loc2 : ""));
+
+            return a.IsEquivalentTo(b);
+        }
+
+        public void UpdateLocalization(string localization)
+        {
+            if(!Settings.CanRead) throw new Exception();
+            if(!Settings.Reader.CanRead(localization)) throw new Exception();
+            
+            string text = Settings.Reader.Read(localization);
+            var node  =   Localization.DeserializeNode(text);
+            CacheNode(localization, node);
         }
 
 
@@ -201,33 +221,33 @@ namespace LocalizationLib
         }
 
 
-        private LocalizationNode GetNode(string path, string localization, bool cacheNode = false)
+        private LocalizationNode GetNode(string path, string localization)
         {
             if(!Settings.CanRead) throw new Exception();
             if(!Settings.Reader.CanRead(localization)) throw new Exception();
             LocalizationPath.Validate(path);
 
-            var node = GetNodeWithCaching(cacheNode && Settings.EnableCaching, localization);
+            var node = GetNodeWithCaching(localization);
             return node.GetNode(new LocalizationPath(path));
         }
 
 
 
 
-        private LocalizationNode GetNodeWithCaching(bool cachingEnabled, string localization) // very pretty
+        private LocalizationNode GetNodeWithCaching(string localization, bool forceCache = false)
         {
-            if(Settings.EnableCaching && CachedNode is not null && localization == CachedNode.Localization) return CachedNode.Node;
-            if(Settings.EnableCaching && CachedNode is not null && Settings.UseSingleFile) return CachedNode.Node;
+            if(Settings.EnableCaching && CachedNodes.ContainsKey(localization)) return CachedNodes[localization];
+            if(Settings.EnableCaching && Settings.UseSingleFile && CachedNodes.Count != 0) return CachedNodes.Single().Value;
             
             string text = Settings.Reader.Read(localization);
             var node  =   Localization.DeserializeNode(text);
-            if(cachingEnabled) CacheNode(localization, node);
+            if(Settings.EnableCaching) CacheNode(localization, node);
             return node;
         }
 
         private void CacheNode(string localization, LocalizationNode node)
         {
-            CachedNode = new (localization, node);
+            CachedNodes[localization] = node;
         }
 
 

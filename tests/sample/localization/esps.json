@@ -1,0 +1,28 @@
+{
+    "welcome":"hola",
+    "string": "New String",
+    "fruit":
+    {
+        "apple": "La Manzana",
+        "banana": "La Banana",
+        "pear": "La Pera"
+    },
+    "subject":
+    {
+        "math":
+        {
+            "name": "Last Matematicas",
+            "description": "oainwodanoidwa"
+        },
+        "literature":
+        {
+            "name": "La Literatura",
+            "description": "hwhwehgwhwehw"
+        },
+        "music":
+        {
+            "name": "La Musica",
+            "description": "pamdowampdwmdoampd"
+        }
+    }
+}
