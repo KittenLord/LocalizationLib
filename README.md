@@ -40,7 +40,7 @@ Localizator localizator = new Localizator(new LocalizatorSettings(
 ));
 ```
 
-Other classes can be used as a `Reader` and as a `Writer`, as long as they implement `ILocalizatorReader` or `ILocalizatorWriter` interface respectively. `Writer` can be left uninitialized, as it is not strictly required for localization process, but failing to initialize `Reader` will most likely result in exceptions.
+Other classes can be used as a `Reader` and as a `Writer`, as long as they implement `ILocalizatorReader` or `ILocalizatorWriter` interface respectively. `Writer` can be left empty, as it is not strictly required for localization process, but failing to provide `Reader` will most likely result in exceptions.
 
 Pre-implemented readers (for now) are:
 - `LocalizationFileReader(folderPath, fileExtension = ".json")` - reads from a file in the specified folder. Each language requires a separate file, named exactly after the localization name (Example: folderPath/eng.json).
