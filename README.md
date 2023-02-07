@@ -68,6 +68,6 @@ localizator.GetString("category.element"); // reads from path rus.category.eleme
 You can also do following things through code
   - Add new element in a category
   - Add new category into another category
-  - Try getting element, and if it doesn't exist, create one (needs valid ILocalizatorWriter)
+  - Try getting element, and if it doesn't exist, create one
   - Check if to localizations have the same "schema", i.e. share the same elements and categories, no more no less
   - Merge two localizations, i.e. add all the elements which miss from one another. You can also select the default value for newly created elements
