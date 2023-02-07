@@ -11,7 +11,7 @@ namespace Examples
                 new LocalizatorFileReader("localization"), // reads from localization/{localization}.json
                 new LocalizatorFileWriter("localization")  // writes to  localization/{localization}.json
             ));
-            Localization.InitLocalizator(localizator);
+            Localization.InitializeLocalizator(localizator);
 
 
 

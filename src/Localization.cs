@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {
@@ -13,17 +14,17 @@ namespace LocalizationLib
         
         public static Localizator GetSingleton()
         {
-            if(_singleton is null) throw new NullReferenceException();
+            if(_singleton is null) throw new LocalizationSingletonIsNullException();
             return _singleton;
         }
-        public static Localizator InitLocalizator(LocalizatorSettings settings)
+        public static Localizator InitializeLocalizator(LocalizatorSettings settings)
         {
             _singleton = new Localizator(settings);
             return _singleton;
         }
-        public static void InitLocalizator(Localizator loc)
+        public static void InitializeLocalizator(Localizator loc)
         {
-            if(loc is null) throw new Exception();
+            if(loc is null) throw new LocalizationSingletonIsNullException();
             if(loc.Settings is null) loc.Settings = new LocalizatorSettings();
             _singleton = loc;
         }
@@ -35,7 +36,7 @@ namespace LocalizationLib
 
         private static T PerformSingletonMethod<T>(Func<Localizator, T> action)
         {
-            if(_singleton is null) throw new Exception();
+            if(_singleton is null) throw new LocalizationSingletonIsNullException();
             return action(_singleton);
         }
 

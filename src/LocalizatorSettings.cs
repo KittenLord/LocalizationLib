@@ -2,18 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {
     public class LocalizatorSettings
     {
         public bool CanRead => Reader is not null;
-        public ILocalizatorReader Reader { get { if(_reader != null) return _reader; throw new NullReferenceException(); } set { _reader = value; } }
+        public ILocalizatorReader Reader { get { if(_reader != null) return _reader; throw new CannotReadException(); } set { _reader = value; } }
         private ILocalizatorReader? _reader;
 
 
         public bool CanWrite => Writer is not null;
-        public ILocalizatorWriter Writer { get { if(_writer != null) return _writer; throw new NullReferenceException(); } set { _writer = value; } }
+        public ILocalizatorWriter Writer { get { if(_writer != null) return _writer; throw new CannotWriteException(); } set { _writer = value; } }
         private ILocalizatorWriter? _writer;
 
 

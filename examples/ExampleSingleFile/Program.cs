@@ -14,7 +14,7 @@ namespace Examples
                 {
                     UseSingleFile = true
                 });
-            Localization.InitLocalizator(localizator);
+            Localization.InitializeLocalizator(localizator);
 
 
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {   
@@ -25,7 +26,7 @@ namespace LocalizationLib
 
         public LocalizatorFileReader(string folder, string fileExtension = ".json")
         {
-            if(!fileExtension.StartsWith(".")) throw new Exception();
+            if(!fileExtension.StartsWith(".")) throw new IncorrectFileExtenstionException(fileExtension);
             FolderPath = folder;
             FileExtension = fileExtension;
         }

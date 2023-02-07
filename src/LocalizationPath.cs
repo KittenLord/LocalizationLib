@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {
@@ -14,8 +15,8 @@ namespace LocalizationLib
         public static string DoubleSeparator => Separator + Separator;
         public static void SetSeparator(string newSeparator)
         {
-            if(newSeparator.Length != 1) throw new Exception();
-            if(!allowedSeparators.Contains(Separator)) throw new Exception();
+            if(newSeparator.Length != 1) throw new InvalidPathSeparatorException(newSeparator);
+            if(!allowedSeparators.Contains(Separator)) throw new InvalidPathSeparatorException(newSeparator);
 
             Separator = newSeparator;
         }
@@ -37,7 +38,7 @@ namespace LocalizationLib
         public void Validate() => Validate(Path);
         public static void Validate(string path)
         {
-            if(!IsValid(path)) throw new Exception();
+            if(!IsValid(path)) throw new InvalidPathException(path);
         }
 
         public static string ClearOfDoubleSeparators(string s)
@@ -57,7 +58,7 @@ namespace LocalizationLib
 
         public string ChopOff(bool changeThis = true)
         {
-            if(Path == "") throw new Exception();
+            if(Path == "") throw new CannotOperateOnPath(Path);
             var p = Path.Split(Separator).ToList();
 
             var part = p.ElementAt(0);
@@ -71,7 +72,7 @@ namespace LocalizationLib
         }
         public string RemoveLast(bool changeThis = true)
         {
-            if(Path == "") throw new Exception();
+            if(Path == "") throw new CannotOperateOnPath(Path);
             var p = Path.Split(Separator).ToList();
 
             var last = p.Last();
@@ -94,7 +95,7 @@ namespace LocalizationLib
 
         public LocalizationPath(string path)
         {
-            if(!IsValid(path)) throw new Exception();
+            if(!IsValid(path)) throw new InvalidPathException(path);
             Path = path;
         }
     }

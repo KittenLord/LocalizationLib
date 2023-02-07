@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {
@@ -161,7 +162,7 @@ namespace LocalizationLib
 
         public void MergeLocalizations(string loc1, string loc2, bool useSourceValues = true, string defaultValue = "")
         {
-            if(!Settings.CanWrite) throw new Exception();
+            if(!Settings.CanWrite) throw new CannotWriteException();
 
             LocalizationNode node1 = GetNode("", loc1);
             LocalizationNode node2 = GetNode("", loc2);
@@ -188,8 +189,8 @@ namespace LocalizationLib
 
         public void UpdateLocalization(string localization)
         {
-            if(!Settings.CanRead) throw new Exception();
-            if(!Settings.Reader.CanRead(localization)) throw new Exception();
+            if(!Settings.CanRead) throw new CannotReadException();
+            if(!Settings.Reader.CanRead(localization)) throw new CannotReadLocalizationException(localization);
             
             string text = Settings.Reader.Read(localization);
             var node  =   Localization.DeserializeNode(text);
@@ -223,8 +224,8 @@ namespace LocalizationLib
 
         private LocalizationNode GetNode(string path, string localization)
         {
-            if(!Settings.CanRead) throw new Exception();
-            if(!Settings.Reader.CanRead(localization)) throw new Exception();
+            if(!Settings.CanRead) throw new CannotReadException();
+            if(!Settings.Reader.CanRead(localization)) throw new CannotReadLocalizationException(localization);
             LocalizationPath.Validate(path);
 
             var node = GetNodeWithCaching(localization);

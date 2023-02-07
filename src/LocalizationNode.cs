@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using LocalizationLib.Exceptions;
 
 namespace LocalizationLib
 {
@@ -29,7 +30,7 @@ namespace LocalizationLib
 
         public string GetString()
         {
-            if(Value is null) throw new Exception();
+            if(Value is null) throw new NodeIsOfUnexpectedTypeException("String", "Category");
 
             return Value;
         }
@@ -44,11 +45,11 @@ namespace LocalizationLib
         {
             if(path.Path == "") return this;
             if(first)
-                if(!DoesNodeExist(path.Copy())) throw new Exception();
-            if(Nodes is null) throw new Exception();
+                if(!DoesNodeExist(path.Copy())) throw new PathDoesNotExistException(path.Path);
+            if(Nodes is null) throw new NodeIsOfUnexpectedTypeException("Category", "String");
 
             var nextElementName = path.ChopOff();
-            if(!Nodes.ContainsKey(nextElementName)) throw new Exception();
+            if(!Nodes.ContainsKey(nextElementName)) throw new Exception(); // probably won't fire, since the path is verified by this point
             var nextElement = Nodes[nextElementName];
             return nextElement.GetNode(path, false);
         }
@@ -93,15 +94,15 @@ namespace LocalizationLib
 
         public void SetString(LocalizationPath path, string value)
         {
-            if(!DoesNodeExist(path.Copy())) throw new Exception();
+            if(!DoesNodeExist(path.Copy())) throw new PathDoesNotExistException(path.Path);
 
             var pathWithoutLast = path.Copy();
             var lastElement = pathWithoutLast.RemoveLast();
             var node = GetNode(pathWithoutLast);
 
-            if(node.Nodes is null) throw new Exception();
+            if(node.Nodes is null) throw new NodeIsOfUnexpectedTypeException("Node", "String");
             if(!node.Nodes.ContainsKey(lastElement)) throw new Exception();
-            if(node.Nodes[lastElement].IsCategory) throw new Exception();
+            if(node.Nodes[lastElement].IsCategory) throw new NodeIsOfUnexpectedTypeException("String", "Node");
             node.Nodes[lastElement] = new LocalizationNode(value);
         }
 
@@ -127,7 +128,7 @@ namespace LocalizationLib
 
         private bool IsOtherCompleteWIthThis(LocalizationNode b)
         {
-            if(this.IsString || b.IsString) throw new Exception();
+            if(this.IsString || b.IsString) throw new NodeIsOfUnexpectedTypeException("Node", "String");
 
             if(this.Nodes is not null && b.Nodes is not null)
             {
@@ -146,7 +147,7 @@ namespace LocalizationLib
 
         public void AddMissingNodes(LocalizationNode source, bool useSourceValues = true, string defaultValue = "")
         {
-            if(this.IsString || source.IsString) throw new Exception();
+            if(this.IsString || source.IsString) throw new NodeIsOfUnexpectedTypeException("Node", "String");
 
             if(this.Nodes is not null && source.Nodes is not null)
             {
