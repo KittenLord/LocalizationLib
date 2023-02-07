@@ -35,14 +35,22 @@ To use library, initialize a Localizator object.
 
 ```cs
 Localizator localizator = new Localizator(new LocalizatorSettings(
-    new LocalizatorFileReader("your path"), // reads from localization/{localizationName}.json
-    new LocalizatorFileWriter("your path")  // writes to  localization/{localizationName}.json
+    new LocalizatorFileReader("your_path"), // reads from your_path/{localizationName}.json
+    new LocalizatorFileWriter("your_path")  // writes to  your_path/{localizationName}.json
 ));
 ```
 
 You can use other classes inheriting ILocalizatorReader and ILocalizatorWriter, and even create your own.
 
 Then you can use Localization.InitLocalizator(localizator) to set the static class' singleton, or use the Localizator object as it is.
+
+```cs
+localizator.SetLocalization("eng");
+localizator.GetString("element"); // reads from file "your_path/eng.json", from path "element"
+
+localizator.SetLocalization("rus");
+localizator.GetString("category.element"); // reads from file "your_path/rus.json", from path "category.element"
+```
 
 There's also an option to use multiple localizations within a single file, if that's what you need. Initialize your Localizator like this:
 
@@ -59,10 +67,10 @@ You can then use it as the previous one, without needing to use localization's p
 
 ```cs
 localizator.SetLocalization("eng");
-localizator.GetString("element"); // reads from path "eng.element"
+localizator.GetString("element"); // reads from file "fileName.json", from path "eng.element"
 
 localizator.SetLocalization("rus");
-localizator.GetString("category.element"); // reads from path rus.category.element
+localizator.GetString("category.element"); // reads from file "fileName.json", from path rus.category.element
 ```
 
 You can also do following things through code
