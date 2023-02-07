@@ -77,9 +77,9 @@ localizator.GetString("category.element", "eng"); // reads from file "your_path/
 `your_path/rus.json`
 ```json
 {
-  "element": "value",
+  "element": "значение",
   "category": {
-    "element": "value"
+    "element": "значение"
   }
 }
 ```
@@ -119,9 +119,9 @@ localizator.GetString("category.element", "eng"); // reads from file "fileName.j
     }
   },
   "rus": {
-    "element": "value",
+    "element": "значение",
     "category": {
-      "element": "value"
+      "element": "значение"
     }
   }
 }
