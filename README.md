@@ -1,6 +1,6 @@
 A C# library for localization, allowing for clean and organized localization tree.
 
-You can write localization in json using following example:
+Using this library, localization can be writted in a tree form like this one below:
 
 ```json
 {
@@ -21,7 +21,7 @@ You can write localization in json using following example:
 }
 ```
 
-To access elements you use paths like these:
+Paths using following syntax can be used to access the elements through the code:
 
 ```
 element1
@@ -29,9 +29,9 @@ category1.innerCategory1.innerInnerElement
 category2.element
 ```
 
-You can also change the separator from '.' to '/' in LocalizationPath class
+Separator in path can also be changed from '.' to '/' if needed. Other separators are forbidden (for now?).
 
-To use library, initialize a Localizator object.
+To start using the library, initialize an object of class Localizator:
 
 ```cs
 Localizator localizator = new Localizator(new LocalizatorSettings(
@@ -40,19 +40,50 @@ Localizator localizator = new Localizator(new LocalizatorSettings(
 ));
 ```
 
-You can use other classes inheriting ILocalizatorReader and ILocalizatorWriter, and even create your own.
+Other classes can be used as a reader and as a writer, as long as they implement `ILocalizatorReader` or `ILocalizatorWriter` interface respectively. `Writer` can be left unitialized, as it is not strictly required for localization process, but failing to initialize `Reader` will most likely result in exceptions.
 
-Then you can use Localization.InitLocalizator(localizator) to set the static class' singleton, or use the Localizator object as it is.
+Pre-implemented readers (for now) are:
+- `LocalizationFileReader(folderPath, fileExtension = ".json")` - reads from a file in specified folder. Each language requires a separate file, named exactly after the localization (Example: folderPath/eng.json).
+- `LocalizationConstantFileReader(filePath)` - reads from a file specified by its path, regardless of selected localization (primarily used if all languages are stored in the same file).
+- `LocalizationTextReader(text)` - uses a constant string value.
+
+Pre-implemented writers (also for now) are:
+- `LocalizatorFileWriter(folderPath, fileExtension = ".json")` - writes to a file in specified folder. File naming rules are the same as in `LocalizationFileReader` (look above).
+- `LocalizationConstantFileWriter(filePath)` - writes to a specified file, regardless of selected localization (primarily used if all languages are stored in the same file).
+
+To get data from the localization file(-s), either set the singleton of a static Localization class, or use the newly created Localizator object as it is.
 
 ```cs
+// Localization.InitLocalizator(localizator); // Localization.GetSingleton() can be used, to retrieve it back
+// Localization.SetLocalization("eng");
+// Localization.Get("element"); // reads from file "your_path/eng.json", from path "element"
+
 localizator.SetLocalization("eng");
 localizator.GetString("element"); // reads from file "your_path/eng.json", from path "element"
 
 localizator.SetLocalization("rus");
 localizator.GetString("category.element"); // reads from file "your_path/rus.json", from path "category.element"
 ```
+`your_path/eng.json`
+```json
+{
+  "element": "value",
+  "category": {
+    "element": "value"
+  }
+}
+```
+`your_path/rus.json`
+```json
+{
+  "element": "value",
+  "category": {
+    "element": "value"
+  }
+}
+```
 
-There's also an option to use multiple localizations within a single file, if that's what you need. Initialize your Localizator like this:
+If there is a need to fit all languages in a single file, property `UseSingleFile` of `LocalizatorSettings` object can be set to true:
 
 ```cs
 Localizator localizator = new Localizator(new LocalizatorSettings(
@@ -63,19 +94,40 @@ Localizator localizator = new Localizator(new LocalizatorSettings(
     });
 ```
 
-You can then use it as the previous one, without needing to use localization's prefixes. For example:
+Localizator can then be used in the exact same way as in the previous example. Note that your file will need a root category for each language:
 
 ```cs
+// Localization.InitLocalizator(localizator);
+// Localization.SetLocalization("eng");
+// Localization.Get("element"); // reads from file "fileName.json", from path "eng.element"
+
 localizator.SetLocalization("eng");
 localizator.GetString("element"); // reads from file "fileName.json", from path "eng.element"
 
 localizator.SetLocalization("rus");
 localizator.GetString("category.element"); // reads from file "fileName.json", from path rus.category.element
 ```
+`fileName.json`
+```json
+{
+  "eng": {
+    "element": "value",
+    "category": {
+      "element": "value"
+    }
+  },
+  "rus": {
+    "element": "value",
+    "category": {
+      "element": "value"
+    }
+  }
+}
+```
 
-You can also do following things through code
-  - Add new element in a category
-  - Add new category into another category
-  - Try getting element, and if it doesn't exist, create one
-  - Check if to localizations have the same "schema", i.e. share the same elements and categories, no more no less
-  - Merge two localizations, i.e. add all the elements which miss from one another. You can also select the default value for newly created elements
+There is also a possibility to modify the existing localization(-s) through code. It is possible to:
+  - Add a new element into an existing category.
+  - Add a new category into another existing category.
+  - Try to get an element, and in case if it doesn't exist, create it and initialize with some value.
+  - Verify that two localizations are using the same "schema", that meaning, they have the exact same "folder" structure.
+  - Merge two localizations, adding missing elements and categories from one to another. After a successful (!) merge, two structures are guaranteed (I guess? Haven't tested it yet, lol) to have the same structure.
