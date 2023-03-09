@@ -60,6 +60,10 @@ namespace LocalizationLib
         public static string GetStringInit(string path, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, initValue));
         public static string GetStringInit(string path, string localization, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, localization, initValue));
         public static string GetStringFormat(string path, params object[] obj) => PerformSingletonMethod(loc => loc.GetStringFormat(path, obj)); 
+        public static List<string> GetArray(string path) => PerformSingletonMethod(loc => loc.GetArray(path));
+        public static List<string> GetArray(string path, string localization) => PerformSingletonMethod(loc => loc.GetArray(path, localization));
+        public static string GetArrayElement(string path, int elementIndex) => PerformSingletonMethod(loc => loc.GetArrayElement(path, elementIndex));
+        public static string GetArrayElement(string path, string localization, int elementIndex) => PerformSingletonMethod(loc => loc.GetArrayElement(path, localization, elementIndex));
         public static AdditionResult AddString(string categoryPath, string stringName, string stringValue) => PerformSingletonMethod(loc => loc.AddString(categoryPath, stringName, stringValue));
         public static AdditionResult AddString(string categoryPath, string localization, string stringName, string stringValue) => PerformSingletonMethod(loc => loc.AddString(categoryPath, localization, stringName, stringValue));
         public static AdditionResult AddCategory(string categoryPath, string categoryName) => PerformSingletonMethod(loc => loc.AddCategory(categoryPath, categoryName));

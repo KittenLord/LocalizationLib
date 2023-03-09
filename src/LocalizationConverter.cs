@@ -26,6 +26,10 @@ namespace LocalizationLib
             {
                 return new LocalizationNode(t.ToString());
             }
+            if(t.Type == JTokenType.Array)
+            {
+                return new LocalizationNode(JsonConvert.DeserializeObject<List<string>>(t.ToString(), new LocalizationConverter()));
+            }
 
             throw new NotImplementedException();
         }
@@ -52,6 +56,11 @@ namespace LocalizationLib
             {
                 if(node.Value is null) throw new Exception();
                 obj = node.Value;
+            }
+            else if(node.IsArray)
+            {
+                if(node.Array is null) throw new Exception();
+                obj = node.IsArray;
             }
 
             serializer.Serialize(writer, obj);

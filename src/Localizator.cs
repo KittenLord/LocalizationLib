@@ -89,6 +89,36 @@ namespace LocalizationLib
 
 
 
+        public List<string> GetArray(string path) => GetArrayInternal(path, CurrentLocalization);
+        public List<string> GetArray(string path, string localization) => GetArrayInternal(path, localization);
+        private List<string> GetArrayInternal(string path, string localization)
+        {
+            path = GetPath(path, localization);
+            var node = GetNode("", localization);
+            var array = node.GetArray(new LocalizationPath(path));
+
+            return array;
+        }
+        
+        
+        
+        
+        
+        public string GetArrayElement(string path, int elementIndex) => GetArrayElementInternal(path, CurrentLocalization, elementIndex);
+        public string GetArrayElement(string path, string localization, int elementIndex) => GetArrayElementInternal(path, localization, elementIndex);
+        private string GetArrayElementInternal(string path, string localization, int elementIndex)
+        {
+            path = GetPath(path, localization);
+            var node = GetNode("", localization);
+            var element = node.GetArrayElement(new LocalizationPath(path), elementIndex);
+
+            return element;
+        }
+
+
+
+
+
         public AdditionResult AddString(string path, string stringName, string stringContent) => AddStringInternal(path, CurrentLocalization, stringName, stringContent);
         public AdditionResult AddString(string path, string localization, string stringName, string stringContent) => AddStringInternal(path, localization, stringName, stringContent);
         private AdditionResult AddStringInternal(string path, string localization, string stringName, string stringContent)

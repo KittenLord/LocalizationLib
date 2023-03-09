@@ -12,7 +12,7 @@ namespace LocalizationLib.Exceptions
     
     [System.Serializable] public class NodeIsOfUnexpectedTypeException : System.Exception
     {
-        public NodeIsOfUnexpectedTypeException(string expectedType, string unexpectedType) : base($"Localization node was not of expected type. Expected type: {expectedType}. Actual type: {unexpectedType}.") { }
+        public NodeIsOfUnexpectedTypeException(LocalizationNodeType expectedType, LocalizationNodeType unexpectedType) : base($"Localization node was not of expected type. Expected type: {expectedType}. Actual type: {unexpectedType}.") { }
     }
 
     [System.Serializable] public class PathDoesNotExistException : System.Exception

@@ -16,21 +16,38 @@ namespace LocalizationLib
         AlreadyExisted = 4
     }
 
+    public enum LocalizationNodeType
+    {
+        String, Category, Array
+    }
+
     public class LocalizationNode
     {
         public string? Value { get; init; }
         public Dictionary<string, LocalizationNode>? Nodes { get; init; }
+        public List<string>? Array { get; init; }
 
 
+        public LocalizationNodeType Type => Value is not null ? LocalizationNodeType.String : (Nodes is not null ? LocalizationNodeType.Category : LocalizationNodeType.Array);
+        public bool IsString => Type == LocalizationNodeType.String;
+        public bool IsCategory => Type == LocalizationNodeType.Category;
+        public bool IsArray => Type == LocalizationNodeType.Array;
 
-        public bool IsString => Value is not null;
-        public bool IsCategory => Nodes is not null;
+
+        private LocalizationNode CreateNodeOfType(LocalizationNodeType type, string defaultValue = "")
+        {
+            if(type == LocalizationNodeType.String) return new LocalizationNode(defaultValue);
+            if(type == LocalizationNodeType.Category) return new LocalizationNode(new Dictionary<string, LocalizationNode>());
+            if(type == LocalizationNodeType.Array) return new LocalizationNode(new List<string>());
+
+            throw new NotImplementedException();
+        }
 
 
 
         public string GetString()
         {
-            if(Value is null) throw new NodeIsOfUnexpectedTypeException("String", "Category");
+            if(Value is null) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.String, Type);
 
             return Value;
         }
@@ -41,12 +58,36 @@ namespace LocalizationLib
             return node.GetString();
         }
 
+        public List<string> GetArray()
+        {
+            if(Array is null) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Array, Type);
+
+            return Array;
+        }
+
+        public List<string> GetArray(LocalizationPath path)
+        {
+            var node = GetNode(path);
+            if(!node.IsArray) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Array, node.Type);
+            if(node.Array is null) throw new NullReferenceException();
+
+            return node.GetArray();
+        }
+
+        public string GetArrayElement(LocalizationPath path, int element)
+        {
+            var list = GetArray(path);
+            if(element < 0 || element >= list.Count) throw new IndexOutOfRangeException();
+
+            return list[element];   
+        }
+
         public LocalizationNode GetNode(LocalizationPath path, bool first = true)
         {
             if(path.Path == "") return this;
             if(first)
                 if(!DoesNodeExist(path.Copy())) throw new PathDoesNotExistException(path.Path);
-            if(Nodes is null) throw new NodeIsOfUnexpectedTypeException("Category", "String");
+            if(Nodes is null) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, Type);
 
             var nextElementName = path.ChopOff();
             if(!Nodes.ContainsKey(nextElementName)) throw new Exception(); // probably won't fire, since the path is verified by this point
@@ -70,7 +111,7 @@ namespace LocalizationLib
         {
             if(DoesNodeExist(LocalizationPath.Combine(categoryPath, stringName))) return AdditionResult.FailedAdding | AdditionResult.AlreadyExisted;
             var node = GetNode(categoryPath);
-            if(node.IsString) return AdditionResult.FailedAdding;
+            if(!node.IsCategory) return AdditionResult.FailedAdding;
             if(node.Nodes is null) return AdditionResult.FailedAdding;
 
             if(node.Nodes.ContainsKey(stringName)) return AdditionResult.FailedAdding | AdditionResult.AlreadyExisted;
@@ -83,7 +124,7 @@ namespace LocalizationLib
         {
             if(DoesNodeExist(LocalizationPath.Combine(categoryPath, categoryName))) return AdditionResult.FailedAdding | AdditionResult.AlreadyExisted;
             var node = GetNode(categoryPath);
-            if(node.IsString) return AdditionResult.FailedAdding;
+            if(!node.IsCategory) return AdditionResult.FailedAdding;
             if(node.Nodes is null) return AdditionResult.FailedAdding;
 
             if(node.Nodes.ContainsKey(categoryName)) return AdditionResult.FailedAdding | AdditionResult.AlreadyExisted;
@@ -100,9 +141,9 @@ namespace LocalizationLib
             var lastElement = pathWithoutLast.RemoveLast();
             var node = GetNode(pathWithoutLast);
 
-            if(node.Nodes is null) throw new NodeIsOfUnexpectedTypeException("Node", "String");
+            if(node.Nodes is null) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, node.Type);
             if(!node.Nodes.ContainsKey(lastElement)) throw new Exception();
-            if(node.Nodes[lastElement].IsCategory) throw new NodeIsOfUnexpectedTypeException("String", "Node");
+            if(!node.Nodes[lastElement].IsString) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.String, node.Type);
             node.Nodes[lastElement] = new LocalizationNode(value);
         }
 
@@ -128,26 +169,29 @@ namespace LocalizationLib
 
         private bool IsOtherCompleteWIthThis(LocalizationNode b)
         {
-            if(this.IsString || b.IsString) throw new NodeIsOfUnexpectedTypeException("Node", "String");
+            if(!this.IsCategory) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, this.Type);
+            if(!b.IsCategory) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, b.Type);
 
             if(this.Nodes is not null && b.Nodes is not null)
             {
                 foreach(var node in this.Nodes)
                 {
                     if(!b.Nodes.ContainsKey(node.Key)) return false;
-                    if(b.Nodes[node.Key].IsString != node.Value.IsString) return false;
+                    if(b.Nodes[node.Key].Type != node.Value.Type) return false;
 
                     var nextNode = b.Nodes[node.Key];
                     if(node.Value.IsCategory) return node.Value.IsOtherCompleteWIthThis(nextNode);
                 }
             }
+            else return false;
 
             return true;
         }
 
         public void AddMissingNodes(LocalizationNode source, bool useSourceValues = true, string defaultValue = "")
         {
-            if(this.IsString || source.IsString) throw new NodeIsOfUnexpectedTypeException("Node", "String");
+            if(this.IsString) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, this.Type);
+            if(source.IsString) throw new NodeIsOfUnexpectedTypeException(LocalizationNodeType.Category, source.Type);
 
             if(this.Nodes is not null && source.Nodes is not null)
             {
@@ -157,7 +201,9 @@ namespace LocalizationLib
                     var value = node.Value;
                     var isCategory = value.IsCategory;
 
-                    var newNode = isCategory ? new LocalizationNode(new Dictionary<string, LocalizationNode>()) : new LocalizationNode(useSourceValues ? (value.Value ?? "") : defaultValue);
+                    var newValue = useSourceValues ? (value.Value ?? "") : defaultValue;
+
+                    var newNode = CreateNodeOfType(value.Type, newValue);
 
                     if(!this.Nodes.ContainsKey(node.Key))
                         this.Nodes.Add(node.Key, newNode);
@@ -179,7 +225,8 @@ namespace LocalizationLib
 
 
 
-        public LocalizationNode(string value) { Value = value; }
-        public LocalizationNode(Dictionary<string, LocalizationNode>? nodes) { Nodes = nodes; }
+        public LocalizationNode(string value) => Value = value; 
+        public LocalizationNode(Dictionary<string, LocalizationNode>? nodes) => Nodes = nodes; 
+        public LocalizationNode(List<string>? array) => Array = array; 
     }
 }
