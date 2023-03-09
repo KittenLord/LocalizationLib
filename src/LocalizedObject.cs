@@ -22,7 +22,7 @@ namespace LocalizationLib
             if(Converter is null) throw new Exception();
 
             var localizator = GetLocalizator();
-            string value = localizator.GetString(Path);
+            string value = localizator.GetStringSafe(Path);
 
             var obj = Converter(value);
 

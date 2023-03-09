@@ -62,6 +62,28 @@ namespace LocalizationLib
 
 
 
+        public string GetStringSafe(string path) => GetStringSafeInternal(path, CurrentLocalization);
+        public string GetStringSafe(string path, string localization) => GetStringSafeInternal(path, localization);
+        private string GetStringSafeInternal(string path, string localization)
+        {
+            try
+            {
+                path = GetPath(path, localization);
+                
+                var node = GetNode("", localization);
+                if(!node.DoesNodeExist(new LocalizationPath(path))) return path;
+
+                node = node.GetNode(new LocalizationPath(path));
+                if(!node.IsString) return path;
+                
+                return node.GetString();
+            }
+            catch { return path; }
+        }
+
+
+
+
 
         public string GetStringFormat(string path, params object[] obj)
         {
