@@ -60,6 +60,17 @@ namespace LocalizationLib
         }
 
 
+
+
+
+        public string GetStringFormat(string path, params object[] obj)
+        {
+            var str = GetString(path);
+            str = string.Format(str, obj);
+            return str;
+        }
+
+
         
 
 

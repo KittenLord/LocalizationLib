@@ -45,10 +45,12 @@ namespace LocalizationLib
         public static void SetLocalization(string localization) => PerformSingletonMethod(loc => loc.SetLocalization(localization));
 
 
+        /// Aliases
         public static string Get(string path) => GetString(path);
         public static string Get(string path, string localization) => GetString(path, localization);
         public static string GetInit(string path, string initValue) => GetStringInit(path, initValue);
         public static string GetInit(string path, string localization, string initValue) => GetStringInit(path, localization, initValue);
+        public static string GetFormat(string path, params object[] obj) => GetStringFormat(path, obj);
 
 
 
@@ -57,6 +59,7 @@ namespace LocalizationLib
         public static string GetString(string path, string localization) => PerformSingletonMethod(loc => loc.GetString(path, localization));
         public static string GetStringInit(string path, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, initValue));
         public static string GetStringInit(string path, string localization, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, localization, initValue));
+        public static string GetStringFormat(string path, params object[] obj) => PerformSingletonMethod(loc => loc.GetStringFormat(path, obj)); 
         public static AdditionResult AddString(string categoryPath, string stringName, string stringValue) => PerformSingletonMethod(loc => loc.AddString(categoryPath, stringName, stringValue));
         public static AdditionResult AddString(string categoryPath, string localization, string stringName, string stringValue) => PerformSingletonMethod(loc => loc.AddString(categoryPath, localization, stringName, stringValue));
         public static AdditionResult AddCategory(string categoryPath, string categoryName) => PerformSingletonMethod(loc => loc.AddCategory(categoryPath, categoryName));
