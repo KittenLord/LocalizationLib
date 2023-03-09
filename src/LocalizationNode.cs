@@ -202,7 +202,6 @@ namespace LocalizationLib
                     var isCategory = value.IsCategory;
 
                     var newValue = useSourceValues ? (value.Value ?? "") : defaultValue;
-
                     var newNode = CreateNodeOfType(value.Type, newValue);
 
                     if(!this.Nodes.ContainsKey(node.Key))
