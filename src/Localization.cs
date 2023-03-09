@@ -51,6 +51,7 @@ namespace LocalizationLib
         public static string GetInit(string path, string initValue) => GetStringInit(path, initValue);
         public static string GetInit(string path, string localization, string initValue) => GetStringInit(path, localization, initValue);
         public static string GetFormat(string path, params object[] obj) => GetStringFormat(path, obj);
+        public static string GetFormat(string path, string localization, object[] obj) => GetStringFormat(path, localization, obj);
 
 
 
@@ -60,6 +61,7 @@ namespace LocalizationLib
         public static string GetStringInit(string path, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, initValue));
         public static string GetStringInit(string path, string localization, string initValue) => PerformSingletonMethod(loc => loc.GetStringInit(path, localization, initValue));
         public static string GetStringFormat(string path, params object[] obj) => PerformSingletonMethod(loc => loc.GetStringFormat(path, obj)); 
+        public static string GetStringFormat(string path, string localization, object[] obj) => PerformSingletonMethod(loc => loc.GetStringFormat(path, localization, obj));
         public static List<string> GetArray(string path) => PerformSingletonMethod(loc => loc.GetArray(path));
         public static List<string> GetArray(string path, string localization) => PerformSingletonMethod(loc => loc.GetArray(path, localization));
         public static string GetArrayElement(string path, int elementIndex) => PerformSingletonMethod(loc => loc.GetArrayElement(path, elementIndex));
